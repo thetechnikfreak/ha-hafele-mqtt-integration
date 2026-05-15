@@ -1,0 +1,63 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Verbind to Häfele Mesh Gateway",
+        "description": "Wähle wie du MQTT konfigurieren willst:",
+        "data": {
+          "setup_type": "Setup Type",
+          "use_ha_mqtt": "Home Assistant MQTT Broker nutzen",
+          "mqtt_broker": "MQTT Broker Host",
+          "mqtt_port": "MQTT Broker Port",
+          "mqtt_username": "MQTT Nutzername",
+          "mqtt_password": "MQTT Passwort",
+          "topic_prefix": "MQTT Topic ",
+          "polling_interval": "Polling Interval (seconds)",
+          "polling_timeout": "Polling Timeout (seconds)",
+          "enable_groups": "Gruppen aktivieren",
+          "enable_scenes": "Scenen aktivieren"
+        }
+      },
+      "automatic": {
+        "title": "Automatisches Setup (Nur mit Mosquitto Addon)",
+        "description": "Ein sicherer MQTT Nutzer wird automatisch für dich erstellt und du kriegst die Login Daten um sie in deiner Häfele Mesh Connect App einzugeben.",
+        "data": {
+          "gateway_topic": "Basis MQTT Topic"
+        },
+        "data_description": {
+          "gateway_topic": "Die Basis MQTT topic (Standart: Mesh)"
+        }
+      },
+      "manual": {
+        "title": "Manuelle MQTT Konfiguration",
+        "description": "Konfigurieren deine MQTT Broker manuell",
+        "data": {
+          "host": "MQTT Broker Host",
+          "port": "MQTT Broker Port",
+          "username": "MQTT Nutzername (optional)",
+          "password": "MQTT Passwort (optional)",
+          "gateway_topic": "Basis MQTT Topic"
+        },
+        "data_description": {
+          "host": "IP address or hostname of MQTT broker",
+          "port": "MQTT broker port (usually 1883)",
+          "gateway_topic": "The base MQTT topic (default: Mesh)"
+        }
+      },
+      "show_credentials": {
+        "title": "MQTT Login Daten wurden generiert",
+        "description": "{instructions}"
+      }
+    },
+    "error": {
+      "cannot_connect": "Die Verbindung mit MQTT Broker ist fehlgeschlagen",
+      "invalid_auth": "Falsche Login Daten",
+      "mqtt_broker_required": " Ein MQTT Broker Host ist nötig wenn Home Assistant MQTT nicht verwendet wird",
+      "ha_mqtt_not_connected": "Home Assistant MQTT Broker ist nicht verbunden",
+      "unknown": "Unerwarteter Error"
+    },
+    "abort": {
+      "already_configured": "Dieses Gateway wurde schon hinzugefügt"
+    }
+  }
+}
