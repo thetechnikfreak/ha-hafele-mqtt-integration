@@ -2,9 +2,10 @@
   "config": {
     "step": {
       "user": {
-        "title": "Hafele Local MQTT",
-        "description": "Configure your Hafele Local MQTT integration",
+        "title": "Connect to Häfele Mesh Gateway",
+        "description": "Choose how you want to configure MQTT",
         "data": {
+          "setup_type": "Setup Type",
           "use_ha_mqtt": "Use Home Assistant MQTT Broker",
           "mqtt_broker": "MQTT Broker Host",
           "mqtt_port": "MQTT Broker Port",
@@ -16,6 +17,36 @@
           "enable_groups": "Enable Group Entities",
           "enable_scenes": "Enable Scene Entities"
         }
+      },
+      "automatic": {
+        "title": "Automatic Setup (Mosquitto)",
+        "description": "A secure MQTT user will be created automatically. You'll receive credentials to enter in your Häfele Mesh Connect app.",
+        "data": {
+          "gateway_topic": "Gateway MQTT Topic"
+        },
+        "data_description": {
+          "gateway_topic": "The base MQTT topic (default: Mesh)"
+        }
+      },
+      "manual": {
+        "title": "Manual MQTT Configuration",
+        "description": "Configure MQTT broker connection manually",
+        "data": {
+          "host": "MQTT Broker Host",
+          "port": "MQTT Broker Port",
+          "username": "Username (optional)",
+          "password": "Password (optional)",
+          "gateway_topic": "Gateway MQTT Topic"
+        },
+        "data_description": {
+          "host": "IP address or hostname of MQTT broker",
+          "port": "MQTT broker port (usually 1883)",
+          "gateway_topic": "The base MQTT topic (default: Mesh)"
+        }
+      },
+      "show_credentials": {
+        "title": "MQTT Credentials Generated",
+        "description": "{instructions}"
       }
     },
     "error": {
@@ -26,8 +57,7 @@
       "unknown": "Unexpected error"
     },
     "abort": {
-      "already_configured": "Hafele Local MQTT is already configured"
+      "already_configured": "This gateway is already configured"
     }
   }
 }
-
