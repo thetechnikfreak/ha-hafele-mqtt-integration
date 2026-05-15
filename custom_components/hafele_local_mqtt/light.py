@@ -262,7 +262,7 @@ async def async_setup_entry(
             # Check if entity already exists in Home Assistant's entity registry
             # We still need to create and provide the entity even if it exists,
             # otherwise Home Assistant will think it's no longer being provided
-            unique_id = f"{device_addr}_mqtt"
+            unique_id = f"{device_info.get("device_name")}"
             existing_entity_id = entity_registry.async_get_entity_id(
                 "light", DOMAIN, unique_id
             )
@@ -296,7 +296,7 @@ async def async_setup_entry(
             )
 
             # Get device name for topic construction
-            device_name = device_info.get("device_name", f"device_{device_addr}")
+            device_name = device_info.get("device_name", f"{device_info.get("device_name")}")
 
             # Create coordinator for this device
             coordinator = HafeleLightCoordinator(
@@ -334,30 +334,34 @@ async def async_setup_entry(
             new_entities.append(entity)
             created_entities.add(device_addr)
 
-        if new_entities:
-            _LOGGER.info("Adding %d light entities", len(new_entities))
-            # Register entities in registry with suggested entity_id before adding
-            # This ensures entity_id format is correct, even for existing entities
-            import re
-            for entity in new_entities:
-                device_name = entity.device_info.get("device_name", f"device_{entity.device_addr}")
-                # Generate entity_id from device name: lowercase, replace spaces with underscores
-                entity_id_base = device_name.lower().replace(" ", "_").replace("-", "_")
-                # Remove any special characters that aren't allowed in entity IDs
-                entity_id_base = re.sub(r"[^a-z0-9_]", "", entity_id_base)
-                suggested_object_id = f"{entity_id_base}_mqtt"
+            if new_entities:
+                _LOGGER.info("Adding %d light entities", len(new_entities))
                 
-                # Register/update entity in registry with suggested entity_id
-                # This will update existing entities or create new ones
-                entity_registry.async_get_or_create(
-                    "light",
-                    DOMAIN,
-                    entity.unique_id,
-                    suggested_object_id=suggested_object_id,
-                )
             
-            # Add all entities - Home Assistant will handle duplicates gracefully
-            # and restore existing entities properly
+                import re
+                for entity in new_entities:
+
+                    device_name = entity.device_info.get("device_name", entity.name)
+                
+
+                    entity_id_base = device_name.lower().replace(" ", "_").replace("-", "_")
+                
+            
+                    suggested_object_id = re.sub(r"[^a-z0-9_]", "", entity_id_base)
+                
+                    _LOGGER.debug(
+                        "Suggesting entity ID: light.%s for unique_id: %s", 
+                        suggested_object_id, entity.unique_id
+                    )
+                
+
+                    entity_registry.async_get_or_create(
+                        "light",
+                        DOMAIN,
+                        entity.unique_id,
+                        suggested_object_id=suggested_object_id,
+                    )
+            
             async_add_entities(new_entities, update_before_add=False)
             _LOGGER.info("Finished adding %d light entities", len(new_entities))
 
@@ -525,7 +529,7 @@ class HafeleLightEntity(CoordinatorEntity, LightEntity):
         self.device_info = device_info
         self.mqtt_client = mqtt_client
         self.topic_prefix = topic_prefix
-        self._attr_unique_id = f"{device_addr}_mqtt"
+        self._attr_unique_id = f"hafele_{device_addr}"
         self._attr_name = device_info.get("device_name", f"Hafele Light {device_addr}")
 
         device_types = device_info.get("device_types", [])
