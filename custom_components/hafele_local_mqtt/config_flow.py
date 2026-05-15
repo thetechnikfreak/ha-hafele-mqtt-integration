@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 import secrets
 import string
+import asyncio
 import uuid
 from typing import Any
 
@@ -86,17 +87,15 @@ async def create_mosquitto_user(hass: HomeAssistant, base_username: str, passwor
 
         credentials = await provider.async_get_or_create_credentials({"username": actual_username})
         await hass.auth.async_link_user(user, credentials)
-
-        if "person" in hass.config.components:
-            await person.async_create_person(hass, display_name, user_id=user.id)
-            
+        await asyncio.sleep(3)    
         try:
             await hass.services.async_call(
                 domain="hassio",
                 service="addon_restart",
                 service_data={"addon": "core_mosquitto"},
-                blocking=False 
+                blocking=True 
             )
+            await asyncio.sleep(10)
         except Exception:
             _LOGGER.warning("Could not automatically restart Mosquitto add-on")
 
@@ -163,11 +162,22 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
 
     async def async_step_show_credentials(self, user_input: dict[str, Any] | None = None) -> FlowResult:
-        """Step 3: Show generated credentials."""
+        """Step 3: Show generated credentials and validate connection on submit."""
+        errors: dict[str, str] = {}
+        
         if user_input is not None:
-            await self.async_set_unique_id(f"auto_{self._mqtt_config[CONF_TOPIC_PREFIX]}")
-            self._abort_if_unique_id_configured()
-            return self.async_create_entry(title="Häfele Mesh (Auto)", data=self._mqtt_config)
+            try:
+                # Validate using the logic you already wrote for manual setup
+                await validate_manual_input(self.hass, self._mqtt_config)
+                
+                await self.async_set_unique_id(f"auto_{self._mqtt_config[CONF_TOPIC_PREFIX]}")
+                self._abort_if_unique_id_configured()
+                return self.async_create_entry(title="Häfele Mesh (Auto)", data=self._mqtt_config)
+            except CannotConnect:
+                # If Mosquitto isn't ready yet, show an error instructing the user to wait a moment and try again
+                errors["base"] = "cannot_connect"
+            except Exception:
+                errors["base"] = "unknown"
 
         import socket
         try:
@@ -185,7 +195,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 "username": self._generated_username,
                 "password": self._generated_password,
                 "topic": self._mqtt_config[CONF_TOPIC_PREFIX],
-            }
+            },
+            errors=errors # Pass errors to the form UI
         )
 
     async def async_step_manual(self, user_input: dict[str, Any] | None = None) -> FlowResult:
