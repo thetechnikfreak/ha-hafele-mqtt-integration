@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/github/license/josephyanks/ha-hafele-mqtt-integration.svg)](LICENSE)
 
 > [!WARNING]  
-> This project is a community-driven, unofficial integration. It is not affiliated with, authorized, maintained, sponsored, or endorsed by Häfele GmbH & Co KG or any of its affiliates. All product and company names are trademarks™ or registered® trademarks of their respective holders..
+> This project is a community-driven, unofficial integration. It is not affiliated with, authorized, maintained, sponsored, or endorsed by Häfele GmbH & Co KG or any of its affiliates. All product and company names are trademarks™ or registered® trademarks of their respective holders.
 
 <img src="./custom_components/hafele_local_mqtt/logo/icon.png" height="128" width="128" />
 Home Assistant custom integration for controlling Hafele LED lights via MQTT using local control.
